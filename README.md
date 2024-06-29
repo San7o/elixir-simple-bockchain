@@ -1,21 +1,12 @@
-# BlockChain
+# elixir-simple-blockchain
 
-**TODO: Add description**
+## Project Statement
 
-## Installation
+This project aims to create a simple block chain in elixir.
+The application must be able to:
+- Create a block.
+- Add the data (header and body) to the block.
+- Hash the block.
+- Chain the blocks together.
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `block_chain` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:block_chain, "~> 0.1.0"}
-  ]
-end
-```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/block_chain>.
-
+Later on, more advanced features might be added like proof-of-stake and a web-ui.
