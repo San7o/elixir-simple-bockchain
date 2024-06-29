@@ -32,7 +32,7 @@ defmodule Block do
   - `prev_block`: The hash of the previous block.
   - `data`: The data that is stored in the block.
   """
-  @spec new(version :: integer, prev_block :: String.t(), data :: %Block.Data{}) :: %Block{}
+  @spec new(version :: integer, prev_block :: String.t(), data :: [%Block.Data{}]) :: %Block{}
   def new(version, prev_block, data) do
     %Block{
       header: %Block.Header{
@@ -40,7 +40,7 @@ defmodule Block do
         prev_block: prev_block,
         merkle_root: "TODO",
         timestamp: DateTime.utc_now() |> DateTime.to_unix(),
-        ntnx_count: 1
+        ntnx_count: Kernel.length(data)
       },
       data: data
     }

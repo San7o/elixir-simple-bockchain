@@ -87,6 +87,7 @@ defmodule BlockChain do
     Agent.get(__MODULE__, &Kernel.map_size(&1))
   end
 
+  # TODO: Implement the merkle tree
   defp block_hash(block) do
     block.data
     |> Enum.map(&String.Chars.to_string(&1))
