@@ -1,5 +1,4 @@
 defmodule Block do
-
   @moduledoc """
   Documentation for `Block`.
 
@@ -18,7 +17,7 @@ defmodule Block do
 
   ## Data
   - data: The actual information that is stored in the block.
-  
+
 
   This is an implementation of the BitCoin block, for more information see [here](https://en.bitcoin.it/wiki/Protocol_documentation#Block_Headers).
   """
@@ -33,7 +32,7 @@ defmodule Block do
   - `prev_block`: The hash of the previous block.
   - `data`: The data that is stored in the block.
   """
-  @spec new(version :: integer, prev_block :: String.t, data :: String.t) :: %Block{}
+  @spec new(version :: integer, prev_block :: String.t(), data :: %Block.Data{}) :: %Block{}
   def new(version, prev_block, data) do
     %Block{
       header: %Block.Header{
@@ -46,5 +45,4 @@ defmodule Block do
       data: data
     }
   end
-
 end

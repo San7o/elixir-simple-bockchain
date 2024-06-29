@@ -7,5 +7,4 @@ defmodule Blockest do
     assert block.header.prev_block == "0"
     assert block.data == "Some Data"
   end
-
 end

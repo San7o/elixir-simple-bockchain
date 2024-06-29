@@ -8,9 +8,9 @@ defmodule BlockChain do
   @doc """
   Starts the BlockChain Agent.
   """
-  @spec start_link([any]) :: {:ok, String.t} | {:error, term}
+  @spec start_link([any]) :: {:ok, String.t()} | {:error, term}
   def start_link(_opts) do
-    {:ok, _pid} = Agent.start_link(fn -> %{} end, name: __MODULE__);
+    {:ok, _pid} = Agent.start_link(fn -> %{} end, name: __MODULE__)
     # Create the genesis block
     :ok = genesis_block()
     {:ok, "BlockChain Agent started"}
@@ -22,10 +22,18 @@ defmodule BlockChain do
   # reference a previous block.
   @spec genesis_block() :: :ok
   defp genesis_block() do
-    block = Block.new(1, "0", "Genesis Block")
+    block =
+      Block.new(1, "0", [
+        %Block.Data{
+          from: "Vincenzo Marco",
+          to: "Giovanni",
+          value: 50
+        }
+      ])
+
     Agent.update(__MODULE__, &Map.put(&1, 1, block))
   end
- 
+
   @doc """
   Adds a new block to the blockchain.
 
@@ -33,7 +41,7 @@ defmodule BlockChain do
   - `version`: The version of the block.
   - `data`: The data that is stored in the block.
   """
-  @spec add_block(integer, String.t) :: :ok
+  @spec add_block(integer, [%Block.Data{}]) :: :ok
   def add_block(version, data) do
     count = get_block_count()
     last_block = get_last_block()
@@ -66,7 +74,7 @@ defmodule BlockChain do
   @doc """
   Gets all blocks from the blockchain.
   """
-  @spec get_blocks() :: [Block.t]
+  @spec get_blocks() :: [Block.t()]
   def get_blocks() do
     Agent.get(__MODULE__, &Map.values(&1))
   end
@@ -80,11 +88,10 @@ defmodule BlockChain do
   end
 
   defp block_hash(block) do
-    block
-    |> Map.values()
+    block.data
+    |> Enum.map(&String.Chars.to_string(&1))
     |> Enum.join()
     |> (&:crypto.hash(:sha256, &1)).()
     |> Base.encode16()
   end
-
 end
