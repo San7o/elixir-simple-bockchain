@@ -11,7 +11,6 @@ defmodule BlockChain do
   @spec start_link([any]) :: {:ok, String.t()} | {:error, term}
   def start_link(_opts) do
     {:ok, _pid} = Agent.start_link(fn -> %{} end, name: __MODULE__)
-    # Create the genesis block
     :ok = genesis_block()
     {:ok, "BlockChain Agent started"}
   end
@@ -31,7 +30,8 @@ defmodule BlockChain do
         }
       ])
 
-    Agent.update(__MODULE__, &Map.put(&1, 1, block))
+    :ok = Agent.update(__MODULE__, &Map.put(&1, 1, block))
+    add_block(1, [])
   end
 
   @doc """
@@ -95,4 +95,15 @@ defmodule BlockChain do
     |> (&:crypto.hash(:sha256, &1)).()
     |> Base.encode16()
   end
+
+  @doc """
+  Adds a new transaction to the last block in the blockchain.
+  """
+  @spec add_transaction(%Transaction{}) :: :ok
+  def add_transaction(transaction) do
+    count = get_block_count()
+    Agent.update(__MODULE__, &Map.update(&1, count, [], fn map -> Block.add_transaction(map, transaction) end))
+    :ok
+  end
+
 end

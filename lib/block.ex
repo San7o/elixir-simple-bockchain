@@ -45,4 +45,16 @@ defmodule Block do
       data: data
     }
   end
+
+  @doc """
+  Add a transaction to the block.
+  Returns a new block with the transaction added to the data.
+  """
+  @spec add_transaction(%Block{}, %Transaction{}) :: %Block{}
+  def add_transaction(block, transaction) do
+    %Block{
+      block | data: [transaction | block.data]
+    }
+  end
+
 end
