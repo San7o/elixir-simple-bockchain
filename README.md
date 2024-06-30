@@ -20,6 +20,12 @@ not use this code anywhere.
 
 - [ ] P2P network
 
+The application is divided into:
+
+- `apps/block_chain`: the blockchain logic, stable
+
+- `apps/bc_node`: the node peer, currently under developement
+
 ## Requirements
 
 You need Elixir and Erlang installed. If you are on NixOS, you can enter the
