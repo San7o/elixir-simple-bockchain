@@ -16,7 +16,7 @@ not use this code anywhere.
 
 - [x] Merkle Tree
 
-- [x] Prood of Work
+- [x] Proof of Work
 
 - [ ] P2P network
 
