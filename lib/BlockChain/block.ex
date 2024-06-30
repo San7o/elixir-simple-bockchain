@@ -30,6 +30,7 @@ defmodule BlockChain.Block do
   ## Parameters
   - `version`: The version of the block.
   - `prev_block`: The hash of the previous block.
+  - `merkle_root`: The root of the merkle tree of transactions.
   - `data`: The data that is stored in the block.
   """
   @spec new(

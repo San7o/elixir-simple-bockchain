@@ -24,7 +24,7 @@ iex -S mix
 ```
 
 First you need to create a wallet with `BlockChain.Wallet`
-```blockchain
+```elixir
 iex> wallet = BlockChain.Wallet.new()
 %BlockChain.Wallet{
   transactions: [],

@@ -38,6 +38,9 @@ defmodule BlockChain.Wallet do
 
   @doc """
   Get the balance of the wallet.
+
+  ## Parameters
+  - `wallet`: The wallet to get the balance of.
   """
   @spec balance(%BlockChain.Wallet{}) :: integer
   def balance(wallet) do

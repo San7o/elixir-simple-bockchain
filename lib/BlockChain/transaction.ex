@@ -12,6 +12,11 @@ defmodule BlockChain.Transaction do
   @doc """
   Creates a new transaction and returns the updated wallet, adding
   the trasaction to the block chain.
+
+  ## Parameters
+  - `from`: The public key of the sender.
+  - `to`: The public key of the receiver.
+  - `amount`: The amount to transfer.
   """
   @spec new(String.t(), String.t(), integer) :: %BlockChain.Wallet{}
   def new(from, to, amount) do
@@ -24,6 +29,9 @@ defmodule BlockChain.Transaction do
 
   @doc """
   Get the hash of a transaction.
+
+  ## Parameters
+  - `transaction`: The transaction to hash.
   """
   @spec hash(%BlockChain.Transaction{}) :: String.t()
   def hash(transaction) do

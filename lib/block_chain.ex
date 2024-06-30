@@ -37,8 +37,7 @@ defmodule BlockChain do
   # Adds a new block to the blockchain.
   #
   ## Parameters
-  # - `version`: The version of the block.
-  # - `data`: The data that is stored in the block.
+  # - `block`: The block to add to the blockchain.
   @spec add_block(%BlockChain.Block{}) :: :ok
   defp add_block(block) do
     count = get_block_count()
