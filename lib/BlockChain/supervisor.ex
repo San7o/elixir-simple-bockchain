@@ -9,6 +9,7 @@ defmodule BlockChain.Supervisor do
   def init(:ok) do
     children = [
       {BlockChain.Transactions, name: BlockChain.Transactions},
+      {BlockChain.MerkleTreeStore, name: BlockChain.MerkleTreeStore},
       {BlockChain, name: BlockChain}
     ]
 

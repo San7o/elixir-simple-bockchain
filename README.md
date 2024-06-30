@@ -37,7 +37,7 @@ iex> wallet = BlockChain.Wallet.new()
     16, ...>>
 }
 ```
-You create a transaction with `BlockChain.Transaction`
+You can create a transaction with `BlockChain.Transaction`
 ```elixir
 iex> transaction = BlockChain.Transaction.new(wallet, receiver_public_key, 10)
 %BlockChain.Transaction{

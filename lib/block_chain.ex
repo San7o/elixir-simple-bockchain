@@ -92,14 +92,16 @@ defmodule BlockChain do
   def mine_block() do
     data = BlockChain.Transactions.get_transactions()
 
-    # Make merkle_tree TODO
-    merkle_root = "TODO"
+    processed_data = data |> Enum.map(&BlockChain.Transaction.hash/1)
+    merkle_tree = MerkleTree.build(processed_data)
+    BlockChain.MerkleTreeStore.add(merkle_tree)
 
     # Mine the block
+    # TODO: Proof of work
 
     # Add the block to the blockchain
     last_block = get_last_block()
-    block = BlockChain.Block.new(1, last_block.header.merkle_root, merkle_root, data)
+    block = BlockChain.Block.new(1, last_block.header.merkle_root, merkle_tree.value, data)
 
     add_block(block)
     BlockChain.Transactions.clear_transactions()

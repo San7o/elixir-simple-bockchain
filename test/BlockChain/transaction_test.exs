@@ -1,6 +1,12 @@
 defmodule BlockChain.TransactionTest do
   use ExUnit.Case
 
+  @moduletag :capture_log
+  setup do
+    Application.stop(:block_chain)
+    Application.start(:block_chain)
+  end
+
   test "create a new transaction" do
     transaction = BlockChain.Transaction.new("gio", "Giovanni", 10)
     assert transaction.from == "gio"
