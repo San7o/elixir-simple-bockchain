@@ -30,5 +30,4 @@ defmodule BlockChain.MerkleTreeStore do
   def get_merkle_tree(root) do
     Agent.get(__MODULE__, &Map.get(&1, root))
   end
-
 end

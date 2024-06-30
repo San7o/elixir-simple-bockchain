@@ -48,4 +48,14 @@ defmodule BlockChainTest do
              %BlockChain.Transaction{from: "Vincenzo Marco", to: "Giovanni", amount: 50}
            ]
   end
+
+  test "verify transaction" do
+    wallet1 = BlockChain.Wallet.new()
+    wallet2 = BlockChain.Wallet.new()
+    transaction = BlockChain.Transaction.new(wallet1.public_key, wallet2.public_key, 1337)
+    wallet1 = BlockChain.Transactions.add_transaction(wallet1, transaction)
+    assert wallet1.transactions == [transaction]
+    assert :ok == BlockChain.mine_block()
+    assert BlockChain.verify_transaction(2, 0) == true
+  end
 end

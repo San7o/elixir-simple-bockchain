@@ -83,7 +83,7 @@ iex> BlockChain.get_block(id)
 iex> BlockChain.get_last_block()
 ```
 
-## Simple implementation
+# Simple implementation
 
 ```elixir
 defmodule BlockChain do
@@ -98,7 +98,6 @@ defmodule BlockChain do
   def start(_type, _args) do
     BlockChain.Supervisor.start_link([])
   end
-
 
   @doc """
   Starts the BlockChain Agent.
@@ -119,16 +118,14 @@ defmodule BlockChain do
     wallet1 = BlockChain.Wallet.new()
     wallet2 = BlockChain.Wallet.new()
     transaction = BlockChain.Transaction.new(wallet1.public_key, wallet2.public_key, 1337)
-
     _wallet1 = BlockChain.Transactions.add_transaction(wallet1, transaction)
     mine_block()
   end
 
-  #Adds a new block to the blockchain.
+  # Adds a new block to the blockchain.
   #
   ## Parameters
-  #- `version`: The version of the block.
-  #- `data`: The data that is stored in the block.
+  # - `block`: The block to add to the blockchain.
   @spec add_block(%BlockChain.Block{}) :: :ok
   defp add_block(block) do
     count = get_block_count()
@@ -152,8 +149,8 @@ defmodule BlockChain do
   @spec get_last_block() :: %BlockChain.Block{}
   def get_last_block() do
     case get_block_count() do
-       0 ->  BlockChain.Block.new(1, "0", "0", [])
-       count -> get_block(count)
+      0 -> BlockChain.Block.new(1, "0", "0", [])
+      count -> get_block(count)
     end
   end
 
@@ -183,18 +180,43 @@ defmodule BlockChain do
   def mine_block() do
     data = BlockChain.Transactions.get_transactions()
 
-    # Make merkle_tree TODO
-    merkle_root = "TODO"
-    
-    # Mine the block
+    processed_data = data |> Enum.map(&BlockChain.Transaction.hash/1)
+    merkle_tree = MerkleTree.build(processed_data)
+    BlockChain.MerkleTreeStore.add(merkle_tree)
 
-    # Add the block to the blockchain
+    # TODO: Proof of work
+
     last_block = get_last_block()
-    block = BlockChain.Block.new(1, last_block.header.merkle_root, merkle_root, data)
+    block = BlockChain.Block.new(1, last_block.header.merkle_root, merkle_tree.value, data)
 
     add_block(block)
     BlockChain.Transactions.clear_transactions()
   end
 
+  @doc """
+  Veryfy a transaction in a block.
+
+  ## Parameters
+  - `block_id`: The id of the block.
+  - `transaction_index`: The index of the transaction in the block data.
+  """
+  @spec verify_transaction(block_id :: integer, transaction_index :: integer) :: boolean
+  def verify_transaction(block_id, transaction_index) do
+    block = get_block(block_id)
+    hashed_transaction = block.data
+                  |> Enum.at(transaction_index)
+                  |> BlockChain.Transaction.hash()
+    merkle_tree = BlockChain.MerkleTreeStore.get_merkle_tree(block.header.merkle_root)
+
+    proof = MerkleTree.Proof.prove(merkle_tree, transaction_index)
+    MerkleTree.Proof.proven?({hashed_transaction, transaction_index}, merkle_tree.value, &MerkleTree.Crypto.sha256/1, proof)
+  end
+
 end
 ```
+
+# TODO
+- Proof of work
+- Digital signing of a transaction
+- Implement security fixes
+- P2P network

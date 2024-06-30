@@ -96,14 +96,32 @@ defmodule BlockChain do
     merkle_tree = MerkleTree.build(processed_data)
     BlockChain.MerkleTreeStore.add(merkle_tree)
 
-    # Mine the block
     # TODO: Proof of work
 
-    # Add the block to the blockchain
     last_block = get_last_block()
     block = BlockChain.Block.new(1, last_block.header.merkle_root, merkle_tree.value, data)
 
     add_block(block)
     BlockChain.Transactions.clear_transactions()
   end
+
+  @doc """
+  Veryfy a transaction in a block.
+
+  ## Parameters
+  - `block_id`: The id of the block.
+  - `transaction_index`: The index of the transaction in the block data.
+  """
+  @spec verify_transaction(block_id :: integer, transaction_index :: integer) :: boolean
+  def verify_transaction(block_id, transaction_index) do
+    block = get_block(block_id)
+    hashed_transaction = block.data
+                  |> Enum.at(transaction_index)
+                  |> BlockChain.Transaction.hash()
+    merkle_tree = BlockChain.MerkleTreeStore.get_merkle_tree(block.header.merkle_root)
+
+    proof = MerkleTree.Proof.prove(merkle_tree, transaction_index)
+    MerkleTree.Proof.proven?({hashed_transaction, transaction_index}, merkle_tree.value, &MerkleTree.Crypto.sha256/1, proof)
+  end
+
 end
