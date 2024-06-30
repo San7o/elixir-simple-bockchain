@@ -1,4 +1,4 @@
-defmodule Wallet do
+defmodule BlockChain.Wallet do
 
   @moduledoc """
   Documentation for `Wallet`.
@@ -12,9 +12,9 @@ defmodule Wallet do
   @doc """
   Creates a new wallet.
   """
-  @spec new() :: %Wallet{}
+  @spec new() :: %BlockChain.Wallet{}
   def new() do
-    %Wallet{
+    %BlockChain.Wallet{
       transactions: [],
       private_key: :crypto.generate_key(:ecdh, :secp256k1) |> elem(1),
       public_key: :crypto.generate_key(:ecdh, :secp256k1) |> elem(0)
@@ -22,11 +22,16 @@ defmodule Wallet do
   end
 
   @doc """
-  Add a transaction to the wallet.
+  Add a transaction to the wallet, without registering it in the blockchain.
+  Do not call this method directly, use `BlockChain.Transaction.new/3` instead.
+
+  ## Parameters
+  - `wallet`: The wallet to add the transaction to.
+  - `transaction`: The transaction to add.
   """
-  @spec add_transaction(%Wallet{}, %Transaction{}) :: %Wallet{}
+  @spec add_transaction(%BlockChain.Wallet{}, %BlockChain.Transaction{}) :: %BlockChain.Wallet{}
   def add_transaction(wallet, transaction) do
-    %Wallet{
+    %BlockChain.Wallet{
       wallet | transactions: [transaction | wallet.transactions]
     }
   end
@@ -34,7 +39,7 @@ defmodule Wallet do
   @doc """
   Get the balance of the wallet.
   """
-  @spec balance(%Wallet{}) :: integer
+  @spec balance(%BlockChain.Wallet{}) :: integer
   def balance(wallet) do
     wallet.transactions
     |> Enum.reduce(0, fn transaction, acc ->

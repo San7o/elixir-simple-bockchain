@@ -1,4 +1,4 @@
-defmodule Block.Header do
+defmodule BlockChain.Block.Header do
   @moduledoc """
   Documentation for `Header`.
 
@@ -14,7 +14,7 @@ defmodule Block.Header do
   defstruct [:version, :prev_block, :merkle_root, :timestamp, :ntnx_count]
 end
 
-defimpl String.Chars, for: Block.Header do
+defimpl String.Chars, for: BlockChain.Block.Header do
   def to_string(header) do
     """
     Version: #{header.version}

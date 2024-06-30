@@ -1,18 +1,25 @@
 defmodule BlockChain do
   use Agent
+  use Application
 
   @moduledoc """
   Documentation for `BlockChain`.
   """
+
+  @impl true
+  def start(_type, _args) do
+    BlockChain.Supervisor.start_link([])
+  end
+
 
   @doc """
   Starts the BlockChain Agent.
   """
   @spec start_link([any]) :: {:ok, String.t()} | {:error, term}
   def start_link(_opts) do
-    {:ok, _pid} = Agent.start_link(fn -> %{} end, name: __MODULE__)
+    {:ok, pid} = Agent.start_link(fn -> %{} end, name: __MODULE__)
     :ok = genesis_block()
-    {:ok, "BlockChain Agent started"}
+    {:ok, pid}
   end
 
   # Genesis block for the BlockChain.
@@ -21,33 +28,22 @@ defmodule BlockChain do
   # reference a previous block.
   @spec genesis_block() :: :ok
   defp genesis_block() do
-    block =
-      Block.new(1, "0", [
-        %Block.Data{
-          from: "Vincenzo Marco",
-          to: "Giovanni",
-          value: 50
-        }
-      ])
+    wallet1 = BlockChain.Wallet.new()
+    wallet2 = BlockChain.Wallet.new()
+    transaction = BlockChain.Transaction.new(wallet1.public_key, wallet2.public_key, 1337)
 
-    :ok = Agent.update(__MODULE__, &Map.put(&1, 1, block))
-    add_block(1, [])
+    _wallet1 = BlockChain.Transactions.add_transaction(wallet1, transaction)
+    mine_block()
   end
 
-  @doc """
-  Adds a new block to the blockchain.
-
+  #Adds a new block to the blockchain.
+  #
   ## Parameters
-  - `version`: The version of the block.
-  - `data`: The data that is stored in the block.
-  """
-  @spec add_block(integer, [%Block.Data{}]) :: :ok
-  def add_block(version, data) do
+  #- `version`: The version of the block.
+  #- `data`: The data that is stored in the block.
+  @spec add_block(%BlockChain.Block{}) :: :ok
+  defp add_block(block) do
     count = get_block_count()
-    last_block = get_last_block()
-    hash = block_hash(last_block)
-
-    block = Block.new(version, hash, data)
     Agent.update(__MODULE__, &Map.put(&1, count + 1, block))
   end
 
@@ -57,7 +53,7 @@ defmodule BlockChain do
   ## Parameters
   - `id`: The id of the block.
   """
-  @spec get_block(integer) :: %Block{}
+  @spec get_block(integer) :: %BlockChain.Block{}
   def get_block(id) do
     Agent.get(__MODULE__, &Map.get(&1, id))
   end
@@ -65,16 +61,18 @@ defmodule BlockChain do
   @doc """
   Gets the last block from the blockchain.
   """
-  @spec get_last_block() :: %Block{}
+  @spec get_last_block() :: %BlockChain.Block{}
   def get_last_block() do
-    count = get_block_count()
-    get_block(count)
+    case get_block_count() do
+       0 ->  BlockChain.Block.new(1, "0", "0", [])
+       count -> get_block(count)
+    end
   end
 
   @doc """
   Gets all blocks from the blockchain.
   """
-  @spec get_blocks() :: [Block.t()]
+  @spec get_blocks() :: [BlockChain.Block.t()]
   def get_blocks() do
     Agent.get(__MODULE__, &Map.values(&1))
   end
@@ -87,23 +85,27 @@ defmodule BlockChain do
     Agent.get(__MODULE__, &Kernel.map_size(&1))
   end
 
-  # TODO: Implement the merkle tree
-  defp block_hash(block) do
-    block.data
-    |> Enum.map(&String.Chars.to_string(&1))
-    |> Enum.join()
-    |> (&:crypto.hash(:sha256, &1)).()
-    |> Base.encode16()
-  end
-
   @doc """
-  Adds a new transaction to the last block in the blockchain.
+  Mines a new block in the blockchain.
+
+  The transactions are added to the block and the block
+  is added to the blockchain, after the block is mined.
   """
-  @spec add_transaction(%Transaction{}) :: :ok
-  def add_transaction(transaction) do
-    count = get_block_count()
-    Agent.update(__MODULE__, &Map.update(&1, count, [], fn map -> Block.add_transaction(map, transaction) end))
-    :ok
+  @spec mine_block() :: :ok
+  def mine_block() do
+    data = BlockChain.Transactions.get_transactions()
+
+    # Make merkle_tree TODO
+    merkle_root = "TODO"
+    
+    # Mine the block
+
+    # Add the block to the blockchain
+    last_block = get_last_block()
+    block = BlockChain.Block.new(1, last_block.header.merkle_root, merkle_root, data)
+
+    add_block(block)
+    BlockChain.Transactions.clear_transactions()
   end
 
 end

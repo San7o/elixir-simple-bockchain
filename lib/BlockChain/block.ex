@@ -1,4 +1,4 @@
-defmodule Block do
+defmodule BlockChain.Block do
   @moduledoc """
   Documentation for `Block`.
 
@@ -32,13 +32,13 @@ defmodule Block do
   - `prev_block`: The hash of the previous block.
   - `data`: The data that is stored in the block.
   """
-  @spec new(version :: integer, prev_block :: String.t(), data :: [%Block.Data{}]) :: %Block{}
-  def new(version, prev_block, data) do
-    %Block{
-      header: %Block.Header{
+  @spec new(version :: integer, prev_block :: String.t(), merkle_root :: String.t(), data :: [%BlockChain.Transaction{}]) :: %BlockChain.Block{}
+  def new(version, prev_block, merkle_root, data) do
+    %BlockChain.Block{
+      header: %BlockChain.Block.Header{
         version: version,
         prev_block: prev_block,
-        merkle_root: "TODO",
+        merkle_root: merkle_root,
         timestamp: DateTime.utc_now() |> DateTime.to_unix(),
         ntnx_count: Kernel.length(data)
       },
@@ -50,9 +50,9 @@ defmodule Block do
   Add a transaction to the block.
   Returns a new block with the transaction added to the data.
   """
-  @spec add_transaction(%Block{}, %Transaction{}) :: %Block{}
+  @spec add_transaction(%BlockChain.Block{}, %BlockChain.Transaction{}) :: %BlockChain.Block{}
   def add_transaction(block, transaction) do
-    %Block{
+    %BlockChain.Block{
       block | data: [transaction | block.data]
     }
   end
