@@ -37,16 +37,19 @@ defmodule BlockChain.Block do
           version :: integer,
           prev_block :: String.t(),
           merkle_root :: String.t(),
+          difficulty :: integer,
+          nonce :: String.t(),
           data :: [%BlockChain.Transaction{}]
         ) :: %BlockChain.Block{}
-  def new(version, prev_block, merkle_root, data) do
+  def new(version, prev_block, merkle_root, difficulty, nonce, data) do
     %BlockChain.Block{
       header: %BlockChain.Block.Header{
         version: version,
         prev_block: prev_block,
         merkle_root: merkle_root,
         timestamp: DateTime.utc_now() |> DateTime.to_unix(),
-        ntnx_count: Kernel.length(data)
+        difficulty: difficulty,
+        nonce: nonce,
       },
       data: data
     }

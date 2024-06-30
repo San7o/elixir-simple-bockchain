@@ -8,10 +8,17 @@ defmodule BlockChain.Block.Header do
   - prev_block: The hash of the previous block.
   - merkle_root: The root of the merkle tree of transactions.
   - timestamp: The time the block was created.
-  - ntnx_count: The number of transactions in the block.
+  - difficulty: The difficulty of the block.
+  - nonce: The nonce of the block that when hashed with the block
+    header, the hash is less than the target.
   """
 
-  defstruct [:version, :prev_block, :merkle_root, :timestamp, :ntnx_count]
+  defstruct [:version, :prev_block, :merkle_root, :timestamp, :difficulty, :nonce]
+
+  @spec hash(%BlockChain.Block.Header{}) :: integer
+  def hash(header) do
+    :crypto.hash(:sha256, header |> Map.from_struct() |> Map.values() |> Enum.join()) |> :binary.decode_unsigned()
+  end
 end
 
 defimpl String.Chars, for: BlockChain.Block.Header do
@@ -21,7 +28,8 @@ defimpl String.Chars, for: BlockChain.Block.Header do
     Previous Block: #{header.prev_block}
     Merkle Root: #{header.merkle_root}
     Timestamp: #{header.timestamp}
-    Number of Transactions: #{header.ntnx_count}
+    Difficulty: #{header.difficulty}
+    Nonce: #{header.nonce}
     """
   end
 end

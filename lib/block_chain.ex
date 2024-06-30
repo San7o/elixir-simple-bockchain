@@ -1,6 +1,12 @@
 defmodule BlockChain do
-  use Agent
   use Application
+  use Agent
+  import Bitwise
+  require Logger
+
+  # The number of leading zeros in the hash in bytes.
+  @difficulty 2
+  @version 1
 
   @moduledoc """
   Documentation for `BlockChain`.
@@ -61,7 +67,7 @@ defmodule BlockChain do
   @spec get_last_block() :: %BlockChain.Block{}
   def get_last_block() do
     case get_block_count() do
-      0 -> BlockChain.Block.new(1, "0", "0", [])
+      0 -> BlockChain.Block.new(@version, "0", "0", 1, 0, [])
       count -> get_block(count)
     end
   end
@@ -91,18 +97,40 @@ defmodule BlockChain do
   @spec mine_block() :: :ok
   def mine_block() do
     data = BlockChain.Transactions.get_transactions()
-
-    processed_data = data |> Enum.map(&BlockChain.Transaction.hash/1)
-    merkle_tree = MerkleTree.build(processed_data)
-    BlockChain.MerkleTreeStore.add(merkle_tree)
-
-    # TODO: Proof of work
+    merkle_tree = save_merkle_tree(data)
 
     last_block = get_last_block()
-    block = BlockChain.Block.new(1, last_block.header.merkle_root, merkle_tree.value, data)
+    block = BlockChain.Block.new(1, last_block.header.merkle_root, merkle_tree.value, @difficulty, 0, data)
+    Logger.debug "Mining block"
+    target = target(@difficulty)
+    nonce = find_nonce(block.header, target)
+    Logger.debug "Nonce: #{nonce}"
+    block = %BlockChain.Block{block | header: %BlockChain.Block.Header{block.header | nonce: nonce}}
 
     add_block(block)
     BlockChain.Transactions.clear_transactions()
+  end
+
+  @spec save_merkle_tree([%BlockChain.Transaction{}]) :: :ok
+  defp save_merkle_tree(data) do
+    processed_data = data |> Enum.map(&BlockChain.Transaction.hash/1)
+    merkle_tree = MerkleTree.build(processed_data)
+    BlockChain.MerkleTreeStore.add(merkle_tree)
+    merkle_tree
+  end
+
+  defp find_nonce(header, target) do
+    #Logger.debug "Nonce: #{header.nonce}"
+    if BlockChain.Block.Header.hash(header) < target do
+      header.nonce
+    else
+      find_nonce(%BlockChain.Block.Header{header | nonce: header.nonce + 1}, target)
+    end
+  end
+
+  @spec target(integer) :: float
+  defp target(bits) do
+    1 <<< 256 - bits*8
   end
 
   @doc """
@@ -124,4 +152,12 @@ defmodule BlockChain do
     MerkleTree.Proof.proven?({hashed_transaction, transaction_index}, merkle_tree.value, &MerkleTree.Crypto.sha256/1, proof)
   end
 
+  @doc """
+  Verify a block.
+  """
+  @spec verify_block(block_id :: integer) :: boolean
+  def verify_block(block_id) do
+    block = get_block(block_id)
+    BlockChain.Block.Header.hash(block.header) < target(block.header.difficulty)
+  end
 end

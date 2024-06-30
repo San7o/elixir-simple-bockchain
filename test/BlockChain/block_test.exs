@@ -3,7 +3,7 @@ defmodule BlockChain.BlockTest do
 
   test "create a new block" do
     block =
-      BlockChain.Block.new(1, "0", "0", [
+      BlockChain.Block.new(1, "0", "0", 1, 0, [
         %BlockChain.Transaction{from: "Test1", to: "Test2", amount: 30}
       ])
 

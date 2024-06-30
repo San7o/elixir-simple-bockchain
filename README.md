@@ -3,10 +3,22 @@
 ## Project Statement
 
 This project aims to create a simple block chain in elixir. This project is directly
-inspired by the Bitcoin Protocol specification.
+inspired by Bitcoin.
 
+
+### Currently implemented
 Currently the project is under heavy developement and is changing rapidly, do
 not use this code anywhere.
+
+- [x] Blockchain and Transactions
+
+- [x] Wallets
+
+- [x] Merkle Tree
+
+- [x] Prood of Work
+
+- [ ] P2P network
 
 ## Requirements
 
@@ -39,7 +51,7 @@ iex> wallet = BlockChain.Wallet.new()
 ```
 You can create a transaction with `BlockChain.Transaction`
 ```elixir
-iex> transaction = BlockChain.Transaction.new(wallet, receiver_public_key, 10)
+iex> transaction = BlockChain.Transaction.new(wallet.public_key, receiver_public_key, 10)
 %BlockChain.Transaction{
   from: %BlockChain.Wallet{
     transactions: [],
@@ -83,12 +95,28 @@ iex> BlockChain.get_block(id)
 iex> BlockChain.get_last_block()
 ```
 
+Verify a transaction on a block:
+```elixir
+iex> BlockChain.verify_transaction(block_id, transaction_index)
+```
+
+Verify a block in the block chain:
+```elixir
+iex> BlockChain.verify_block(block_id)
+```
+
 # Simple implementation
 
 ```elixir
 defmodule BlockChain do
-  use Agent
   use Application
+  use Agent
+  import Bitwise
+  require Logger
+
+  # The number of leading zeros in the hash in bytes.
+  @difficulty 2
+  @version 1
 
   @moduledoc """
   Documentation for `BlockChain`.
@@ -149,7 +177,7 @@ defmodule BlockChain do
   @spec get_last_block() :: %BlockChain.Block{}
   def get_last_block() do
     case get_block_count() do
-      0 -> BlockChain.Block.new(1, "0", "0", [])
+      0 -> BlockChain.Block.new(@version, "0", "0", 1, 0, [])
       count -> get_block(count)
     end
   end
@@ -179,18 +207,40 @@ defmodule BlockChain do
   @spec mine_block() :: :ok
   def mine_block() do
     data = BlockChain.Transactions.get_transactions()
-
-    processed_data = data |> Enum.map(&BlockChain.Transaction.hash/1)
-    merkle_tree = MerkleTree.build(processed_data)
-    BlockChain.MerkleTreeStore.add(merkle_tree)
-
-    # TODO: Proof of work
+    merkle_tree = save_merkle_tree(data)
 
     last_block = get_last_block()
-    block = BlockChain.Block.new(1, last_block.header.merkle_root, merkle_tree.value, data)
+    block = BlockChain.Block.new(1, last_block.header.merkle_root, merkle_tree.value, @difficulty, 0, data)
+    Logger.debug "Mining block"
+    target = target(@difficulty)
+    nonce = find_nonce(block.header, target)
+    Logger.debug "Nonce: #{nonce}"
+    block = %BlockChain.Block{block | header: %BlockChain.Block.Header{block.header | nonce: nonce}}
 
     add_block(block)
     BlockChain.Transactions.clear_transactions()
+  end
+
+  @spec save_merkle_tree([%BlockChain.Transaction{}]) :: :ok
+  defp save_merkle_tree(data) do
+    processed_data = data |> Enum.map(&BlockChain.Transaction.hash/1)
+    merkle_tree = MerkleTree.build(processed_data)
+    BlockChain.MerkleTreeStore.add(merkle_tree)
+    merkle_tree
+  end
+
+  defp find_nonce(header, target) do
+    #Logger.debug "Nonce: #{header.nonce}"
+    if BlockChain.Block.Header.hash(header) < target do
+      header.nonce
+    else
+      find_nonce(%BlockChain.Block.Header{header | nonce: header.nonce + 1}, target)
+    end
+  end
+
+  @spec target(integer) :: float
+  defp target(bits) do
+    1 <<< 256 - bits*8
   end
 
   @doc """
@@ -212,11 +262,13 @@ defmodule BlockChain do
     MerkleTree.Proof.proven?({hashed_transaction, transaction_index}, merkle_tree.value, &MerkleTree.Crypto.sha256/1, proof)
   end
 
+  @doc """
+  Verify a block.
+  """
+  @spec verify_block(block_id :: integer) :: boolean
+  def verify_block(block_id) do
+    block = get_block(block_id)
+    BlockChain.Block.Header.hash(block.header) < target(block.header.difficulty)
+  end
 end
 ```
-
-# TODO
-- Proof of work
-- Digital signing of a transaction
-- Implement security fixes
-- P2P network
