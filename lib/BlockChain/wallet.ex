@@ -1,5 +1,4 @@
 defmodule BlockChain.Wallet do
-
   @moduledoc """
   Documentation for `Wallet`.
 
@@ -32,7 +31,8 @@ defmodule BlockChain.Wallet do
   @spec add_transaction(%BlockChain.Wallet{}, %BlockChain.Transaction{}) :: %BlockChain.Wallet{}
   def add_transaction(wallet, transaction) do
     %BlockChain.Wallet{
-      wallet | transactions: [transaction | wallet.transactions]
+      wallet
+      | transactions: [transaction | wallet.transactions]
     }
   end
 

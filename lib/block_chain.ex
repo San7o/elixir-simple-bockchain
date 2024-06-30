@@ -11,7 +11,6 @@ defmodule BlockChain do
     BlockChain.Supervisor.start_link([])
   end
 
-
   @doc """
   Starts the BlockChain Agent.
   """
@@ -31,16 +30,15 @@ defmodule BlockChain do
     wallet1 = BlockChain.Wallet.new()
     wallet2 = BlockChain.Wallet.new()
     transaction = BlockChain.Transaction.new(wallet1.public_key, wallet2.public_key, 1337)
-
     _wallet1 = BlockChain.Transactions.add_transaction(wallet1, transaction)
     mine_block()
   end
 
-  #Adds a new block to the blockchain.
+  # Adds a new block to the blockchain.
   #
   ## Parameters
-  #- `version`: The version of the block.
-  #- `data`: The data that is stored in the block.
+  # - `version`: The version of the block.
+  # - `data`: The data that is stored in the block.
   @spec add_block(%BlockChain.Block{}) :: :ok
   defp add_block(block) do
     count = get_block_count()
@@ -64,8 +62,8 @@ defmodule BlockChain do
   @spec get_last_block() :: %BlockChain.Block{}
   def get_last_block() do
     case get_block_count() do
-       0 ->  BlockChain.Block.new(1, "0", "0", [])
-       count -> get_block(count)
+      0 -> BlockChain.Block.new(1, "0", "0", [])
+      count -> get_block(count)
     end
   end
 
@@ -97,7 +95,7 @@ defmodule BlockChain do
 
     # Make merkle_tree TODO
     merkle_root = "TODO"
-    
+
     # Mine the block
 
     # Add the block to the blockchain
@@ -107,5 +105,4 @@ defmodule BlockChain do
     add_block(block)
     BlockChain.Transactions.clear_transactions()
   end
-
 end

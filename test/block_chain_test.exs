@@ -43,6 +43,9 @@ defmodule BlockChainTest do
 
     block = BlockChain.get_block(2)
     assert block.header.version == 1
-    assert block.data == [%BlockChain.Transaction{from: "Vincenzo Marco", to: "Giovanni", amount: 50}]
+
+    assert block.data == [
+             %BlockChain.Transaction{from: "Vincenzo Marco", to: "Giovanni", amount: 50}
+           ]
   end
 end

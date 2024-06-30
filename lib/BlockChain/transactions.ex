@@ -58,5 +58,4 @@ defmodule BlockChain.Transactions do
   def get_transactions() do
     Agent.get(__MODULE__, &Map.values(&1))
   end
-
 end

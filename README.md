@@ -5,9 +5,12 @@
 This project aims to create a simple block chain in elixir. This project is directly
 inspired by the Bitcoin Protocol specification.
 
+Currently the project is under heavy developement and is changing rapidly, do
+not use this code anywhere.
+
 ## Requirements
 
-You need Elixir and Erland installed. If you are on NixOS, you can enter the
+You need Elixir and Erlang installed. If you are on NixOS, you can enter the
 developement environment with
 ```bash
 nix develop
@@ -21,7 +24,7 @@ iex -S mix
 ```
 
 First you need to create a wallet with `BlockChain.Wallet`
-```
+```blockchain
 iex> wallet = BlockChain.Wallet.new()
 %BlockChain.Wallet{
   transactions: [],

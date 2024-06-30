@@ -13,5 +13,4 @@ defmodule BlockChain.WalletTest do
     wallet = BlockChain.Transactions.add_transaction(wallet1, transaction)
     assert BlockChain.Wallet.balance(wallet) == -10
   end
-
 end
