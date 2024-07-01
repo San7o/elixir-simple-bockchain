@@ -107,6 +107,7 @@ defmodule BcNode.Command do
 
   def run({:mine_blockchain}) do
     BlockChain.mine_block()
+    GenServer.cast(:bc_node, {:broadcast_mined_block})
     {:ok, "OK\n"}
   end
 
