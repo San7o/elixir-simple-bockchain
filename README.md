@@ -43,7 +43,7 @@ You might need to install required depenencies with:
 mix deps.get
 ```
 
-To run test, use the following command inside `apps/block_chain/`
+To run tests, use the following command inside `apps/block_chain/`
 ```bash
 mix test
 ```
@@ -58,10 +58,10 @@ mix run
 ```
 If you want multiple nodes on the same machine, you can specify the `TCP_PORT` environment variable.
 ```bash
-PORT=1234 mix run
+TCP_PORT=1234 mix run
 ```
 
-By default, the node listens on TCP for commands on port 49999 and listend on broadcast from the other peer in 49998. To issue commands, you can connect with `netcat` or any other telnet client:
+By default, the node listens on TCP for commands on port `49999` and listend on broadcast from the other peer in `49998`. To issue commands, you can connect with `netcat` or any other telnet client:
 ```bash
 nc localhost 49999
 ```
@@ -82,7 +82,7 @@ node> BLOCKCHAIN HELP
 node>
 ```
 
-## Library
+## Library examples
 
 To acces the `BlockChain` library, enter in interactive mode inside `apps/block_chain/`:
 ```bash
@@ -108,12 +108,12 @@ iex> transaction = BlockChain.Transaction.new(wallet.public_key, receiver_public
 }
 ```
 
-And you can register the transaction in the network
+And you can register the transaction in the transactions pool
 ```elixir
 iex> wallet = BlockChain.Transactions.add_transaction(wallet, transaction)
 ```
 
-Check all the transactions ready to be mined
+Check all the transactions ready to be mined from the pool
 ```elixir
 iex> BlockChain.Transactions.get_transactions()
 ```
