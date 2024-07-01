@@ -6,9 +6,9 @@ This project aims to create a simple block chain in elixir. This project is dire
 inspired by Bitcoin.
 
 
-### Currently implemented
-Currently the project is under heavy developement and is changing rapidly, do
-not use this code anywhere.
+### Current state
+The project is just a minimum viable product, It does not fully implement the P2P network
+and It doesn't aim to be run in any production. What has been implemented is:
 
 - [x] Blockchain
 
@@ -20,9 +20,9 @@ not use this code anywhere.
 
 - [x] Proof of Work
 
-- [x] Transaction and Block validation
+- [x] Transaction & Block validation
 
-- [ ] P2P network
+- [x] Broadcasting
 
 The application is divided into:
 
