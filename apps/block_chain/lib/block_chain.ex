@@ -4,8 +4,8 @@ defmodule BlockChain do
   require Logger
 
   # The number of leading zeros in the hash in bytes.
-  @difficulty 2
-  @version 1
+  @difficulty BlockChain.Constants.difficulty()
+  @version BlockChain.Constants.version()
 
   @moduledoc """
   Documentation for `BlockChain`.
