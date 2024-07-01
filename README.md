@@ -56,16 +56,16 @@ To run the peer node, use the command:
 ```bash
 mix run
 ```
-If you want multiple nodes on the same machine, you can specify the `TCP_PORT` environment variable.
+If you want multiple nodes on the same machine, you can specify the `TCP_PORT` environment variable:
 ```bash
 TCP_PORT=1234 mix run
 ```
 
-By default, the node listens on TCP for commands on port `49999` and listend on broadcast from the other peer in `49998`. To issue commands, you can connect with `netcat` or any other telnet client:
+By default, the node listens on TCP for commands on port `49999` and listens on broadcast from the other peers in `49998`. To issue commands, you can connect with `netcat` or any other telnet client:
 ```bash
 nc localhost 49999
 ```
-You can then interact with the following commands
+You can then interact with the following commands:
 ```
 node> WALLET HELP
  - WALLET NEW <name> - Create a new wallet
