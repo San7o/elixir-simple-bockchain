@@ -32,6 +32,18 @@ defmodule BlockChain.Transactions do
   end
 
   @doc """
+  Add a new transaction in the blockchain, without updating a wallet.
+
+  ## Parameters
+  - `transaction`: The transaction to save.
+  """
+  @spec add_transaction(%BlockChain.Transaction{}) :: :ok
+  def add_transaction(transaction) do
+    count = get_transaction_count()
+    Agent.update(__MODULE__, &Map.put(&1, count + 1, transaction))
+  end
+
+  @doc """
   Get the trascation count.
 
   Returns the number of transactions as an integer.

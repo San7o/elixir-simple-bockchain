@@ -12,4 +12,18 @@ defmodule BlockChain.BlockTest do
     assert block.header.merkle_root == "0"
     assert block.data == [%BlockChain.Transaction{from: "Test1", to: "Test2", amount: 30}]
   end
+
+  test "is block" do
+    block = {}
+    assert BlockChain.Block.is_block(block) == false
+
+    block = 1
+    assert BlockChain.Block.is_block(block) == false
+
+    block = %{}
+    assert BlockChain.Block.is_block(block) == false
+
+    block = %BlockChain.Block{}
+    assert BlockChain.Block.is_block(block) == true
+  end
 end

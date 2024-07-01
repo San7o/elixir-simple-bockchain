@@ -19,7 +19,7 @@ defmodule BcNode.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {BcNode.Application, []}
+      mod: {BcNode.Application, []},
     ]
   end
 

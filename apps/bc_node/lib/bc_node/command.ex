@@ -3,6 +3,9 @@ defmodule BcNode.Command do
 
   def parse(line) do
     case String.split(line) do
+      ["HELP"] ->
+        {:ok, {:help}}
+
       ["WALLET", "HELP"] ->
         {:ok, {:help_wallet}}
 
@@ -46,6 +49,11 @@ defmodule BcNode.Command do
 
   def run(command)
 
+  def run({:help}) do
+    {:ok,
+     " - WALLET - Wallet commands\n - TRANSACTION - Transaction commands\n - BLOCKCHAIN - Blockchain commands\n"}
+  end
+
   def run({:help_wallet}) do
     {:ok,
      " - WALLET NEW <name> - Create a new wallet\n - WALLET SHOW <name> - Show wallet\n - WALLET LIST - List wallets\n"}
@@ -74,8 +82,11 @@ defmodule BcNode.Command do
   def run({:new_transaction, from, to, amount}) do
     from_wallet = BcNode.Wallets.get_wallet(from)
     transaction = BlockChain.Transaction.new(from_wallet.public_key, to, amount)
-    _wallet = BlockChain.Transactions.add_transaction(from_wallet, transaction)
+
+    # BlockChain.Transactions.add_transaction(transaction)
     BcNode.Wallets.add_transaction(from, transaction)
+
+    GenServer.cast(:bc_node, {:broadcast, transaction})
     {:ok, "OK\n"}
   end
 

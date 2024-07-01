@@ -66,4 +66,11 @@ defmodule BlockChain.Block do
       | data: [transaction | block.data]
     }
   end
+
+  @spec is_block(any) :: boolean
+  def is_block(block) do
+    is_map(block) and
+      Map.has_key?(block, :header) and
+      Map.has_key?(block, :data)
+  end
 end

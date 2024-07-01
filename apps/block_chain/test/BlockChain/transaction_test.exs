@@ -19,4 +19,15 @@ defmodule BlockChain.TransactionTest do
     hash = BlockChain.Transaction.hash(transaction)
     assert hash == "7C59E5D7960DE086735EEC729B42ECBF9BA319DA72C16ADE4E8BEA912344A28C"
   end
+
+  test "is transaction" do
+    transaction = %BlockChain.Transaction{from: "Test1", to: "Test2", amount: 30}
+    assert BlockChain.Transaction.is_transaction(transaction) == true
+
+    transaction = %{}
+    assert BlockChain.Transaction.is_transaction(transaction) == false
+
+    transaction = 1
+    assert BlockChain.Transaction.is_transaction(transaction) == false
+  end
 end

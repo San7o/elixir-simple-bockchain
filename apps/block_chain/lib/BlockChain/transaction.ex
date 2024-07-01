@@ -38,4 +38,12 @@ defmodule BlockChain.Transaction do
     :crypto.hash(:sha256, transaction |> Map.from_struct() |> Map.values() |> Enum.join())
     |> Base.encode16()
   end
+
+  @spec is_transaction(any) :: boolean
+  def is_transaction(transaction) do
+    is_map(transaction) and
+      Map.has_key?(transaction, :from) and
+      Map.has_key?(transaction, :to) and
+      Map.has_key?(transaction, :amount)
+  end
 end

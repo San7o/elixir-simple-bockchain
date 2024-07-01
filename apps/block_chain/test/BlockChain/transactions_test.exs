@@ -22,4 +22,11 @@ defmodule BlockChain.TransactionsTest do
     assert transactions == []
   end
 
+  test "add single transaction without wallet" do
+    wallet1 = BlockChain.Wallet.new()
+    wallet2 = BlockChain.Wallet.new()
+    transaction = BlockChain.Transaction.new(wallet1.public_key, wallet2.public_key, 1337)
+    BlockChain.Transactions.add_transaction(transaction)
+    assert BlockChain.Transactions.get_transactions() == [transaction]
+  end
 end

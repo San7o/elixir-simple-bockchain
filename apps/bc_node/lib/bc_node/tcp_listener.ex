@@ -14,6 +14,8 @@ defmodule BcNode.TCPListener do
   end
 
   def init(:ok) do
+    port = String.to_integer(System.get_env("TCP_PORT") || "#{@port}")
+
     tcp_options = [
       :binary,
       packet: :line,
@@ -21,8 +23,8 @@ defmodule BcNode.TCPListener do
       reuseaddr: true
     ]
 
-    Logger.info("Opening TCP socket on port #{@port}")
-    {:ok, socket} = :gen_tcp.listen(@port, tcp_options)
+    Logger.info("Opening TCP socket on port #{port}")
+    {:ok, socket} = :gen_tcp.listen(port, tcp_options)
     loop_acceptor(socket)
   end
 
