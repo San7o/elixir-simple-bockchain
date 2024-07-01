@@ -27,6 +27,7 @@ defmodule BlockChain do
   # reference a previous block.
   @spec genesis_block() :: :ok
   defp genesis_block() do
+    Logger.debug "Creating genesis block"
     wallet1 = BlockChain.Wallet.new()
     wallet2 = BlockChain.Wallet.new()
     transaction = BlockChain.Transaction.new(wallet1.public_key, wallet2.public_key, 1337)

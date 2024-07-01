@@ -15,8 +15,8 @@ defmodule BlockChain.Wallet do
   def new() do
     %BlockChain.Wallet{
       transactions: [],
-      private_key: :crypto.generate_key(:ecdh, :secp256k1) |> elem(1),
-      public_key: :crypto.generate_key(:ecdh, :secp256k1) |> elem(0)
+      private_key: :crypto.generate_key(:ecdh, :secp256k1) |> elem(1) |> Base.encode16(),
+      public_key: :crypto.generate_key(:ecdh, :secp256k1) |> elem(0) |> Base.encode16()
     }
   end
 

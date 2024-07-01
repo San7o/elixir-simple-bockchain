@@ -8,9 +8,12 @@ defmodule BcNode.Supervisor do
   @impl true
   def init(:ok) do
     children = [
-      {BcNode, name: BcNode}
+      {BcNode, name: BcNode},
+      {BcNode.Wallets, name: BcNode.Wallets},
+      {Task.Supervisor, name: BcNode.TaskSupervisor},
+      {BcNode.TCPListener, name: BcNode.TCPListener}
     ]
 
-    Supervisor.init(children, strategy: :one_for_all)
+    Supervisor.init(children, strategy: :one_for_all, name: BcNode.Supervisor)
   end
 end

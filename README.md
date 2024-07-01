@@ -10,13 +10,17 @@ inspired by Bitcoin.
 Currently the project is under heavy developement and is changing rapidly, do
 not use this code anywhere.
 
-- [x] Blockchain and Transactions
+- [x] Blockchain
+
+- [x] Transactions
 
 - [x] Wallets
 
 - [x] Merkle Tree
 
 - [x] Proof of Work
+
+- [x] Transaction and Block validation
 
 - [ ] P2P network
 
@@ -34,9 +38,48 @@ developement environment with
 nix develop
 ```
 
+You might need to install required depenencies with:
+```bash
+mix deps.get
+```
+
+To run test, use the following command inside `apps/block_chain/`
+```bash
+mix test
+```
+
 # Usage
 
-Enter in interactive mode:
+## Node
+
+To run the peer node, use the command:
+```bash
+mix run
+```
+The node listens on TCP for commands on port 49999 and listend on broadcast from the other peer in 49998. To issue commands, you can connect with `netcat` or any other telnet client:
+```bash
+nc localhost 49999
+```
+You can then interact with the following commands
+```
+node>WALLET HELP
+ - WALLET NEW <name> - Create a new wallet
+ - WALLET SHOW <name> - Show wallet
+ - WALLET LIST - List wallets
+node>TRANSACTION HELP
+ - TRANSACTION NEW <from-wallet> <to-public-key> <amount> - Create a new transaction
+ - TRANSACTION LIST - List transactions
+node>BLOCKCHAIN HELP
+ - BLOCKCHAIN SHOW - Show blockchain
+ - BLOCKCHAIN MINE - Mine a new block
+ - BLOCKCHAIN VERIFY BLOCK <block-id> - Verify a block
+ - BLOCKCHAIN VERIFY TRANSACTION <block-id> <transaction-index> - Verify a transaction
+node>
+```
+
+## Library
+
+To acces the `BlockChain` library, enter in interactive mode inside `apps/block_chain/`:
 ```bash
 iex -S mix
 ```
@@ -46,26 +89,16 @@ First you need to create a wallet with `BlockChain.Wallet`
 iex> wallet = BlockChain.Wallet.new()
 %BlockChain.Wallet{
   transactions: [],
-  private_key: <<221, 106, 154, 35, 201, 81, 115, 176, 247, 29, 45, 33, 67, 94,
-    97, 192, 214, 101, 28, 125, 113, 23, 203, 124, 182, 184, 171, 217, 35, 21,
-    111, 69>>,
-  public_key: <<4, 152, 36, 193, 156, 164, 226, 168, 118, 133, 175, 29, 184, 80,
-    124, 120, 105, 118, 227, 83, 106, 49, 155, 23, 221, 19, 127, 177, 117, 126,
-    123, 112, 215, 206, 81, 215, 85, 141, 109, 157, 82, 178, 254, 76, 16, 49,
-    16, ...>>
-}
+  private_key: "EA7A08635937EC89A4B693AC9F47493DDD4C481C5DA884B04A34787719A42724",
+  public_key: "045AD110FD07045BC9C7D38329283DC18EE07BC476CE477122D8130F2639ADB773CFF925F80C1CBB94B5DD7B7A135ED34DFD262E6433B5FC1BBB906AC71BACC9DD"
+  }
 ```
 You can create a transaction with `BlockChain.Transaction`
 ```elixir
 iex> transaction = BlockChain.Transaction.new(wallet.public_key, receiver_public_key, 10)
 %BlockChain.Transaction{
-  from: <<4, 152, 36, 193, 156, 164, 226, 168, 118, 133, 175, 29, 184,
-      80, 124, 120, 105, 118, 227, 83, 106, 49, 155, 23, 221, 19, 127, 177, 117,
-      126, 123, 112, 215, 206, 81, 215, 85, 141, 109, 157, 82, 178, 254, 76, 16,
-      49, ...>>,
-  to: <<4, 240, 218, 96, 169, 237, 255, 60, 243, 147, 18, 124, 232, 157, 30, 58,
-    20, 196, 42, 165, 37, 216, 39, 234, 226, 70, 98, 122, 151, 239, 236, 134,
-    140, 218, 182, 55, 51, 25, 180, 132, 145, 0, 1, 96, 138, 7, 112, 102, ...>>,
+  from: "045AD110FD07045BC9C7D38329283DC18EE07BC476CE477122D8130F2639ADB773CFF925F80C1CBB94B5DD7B7A135ED34DFD262E6433B5FC1BBB906AC71BACC9DD",
+  to: "04A26948A1CB444CF11734A0F01386DB45FCE700E74707CF9B560A6EACC8170A9E6204EEBCD19D9FF46C8E7337FF84311AB5621EC64E43C837AF2056B6795E3AFA",
   amount: 10
 }
 ```
