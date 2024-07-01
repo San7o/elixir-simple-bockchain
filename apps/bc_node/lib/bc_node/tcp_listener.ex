@@ -37,7 +37,7 @@ defmodule BcNode.TCPListener do
   end
 
   defp serve(socket) do
-    write_line(socket, {:ok, "node>"})
+    write_line(socket, {:ok, "node> "})
 
     msg =
       with {:ok, data} <- read_line(socket),
